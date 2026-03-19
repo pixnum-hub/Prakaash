@@ -1,0 +1,128 @@
+{
+  "name": "Prakasha — Vedic Astrology",
+  "short_name": "Prakasha",
+  "description": "Complete Vedic Jyotish — 33 tabs: birth charts, VSOP87 astronomy, all dasha systems, nakshatra encyclopedia, sahams, upagrahas, fixed stars, gochara, calendar export, full PDF reports. By Manik Roy.",
+  "start_url": "./vedic-astrology.html",
+  "scope": "./",
+  "id": "prakasha-vedic-astrology",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui",
+    "browser"
+  ],
+  "orientation": "portrait-primary",
+  "background_color": "#0A0612",
+  "theme_color": "#C9A84C",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": [
+    "lifestyle",
+    "education",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-180x180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/icon-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "New Birth Chart",
+      "short_name": "Birth Chart",
+      "description": "Calculate a new Vedic birth chart",
+      "url": "./vedic-astrology.html#birth",
+      "icons": [
+        {
+          "src": "icons/icon-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Today's Panchānga",
+      "short_name": "Panchānga",
+      "description": "View today's Vedic daily almanac",
+      "url": "./vedic-astrology.html#panchanga",
+      "icons": [
+        {
+          "src": "icons/icon-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Nakshatra Guide",
+      "short_name": "Nakshatras",
+      "description": "Encyclopedia of all 27 lunar mansions",
+      "url": "./vedic-astrology.html#nakshatra",
+      "icons": [
+        {
+          "src": "icons/icon-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
+}
