@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Prakasha — Redirecting…</title>
+<script>
+// GitHub Pages SPA redirect: encode path as ?p= query param
+var l = window.location;
+var base = l.pathname.split('/').slice(0, 2).join('/');
+l.replace(l.protocol + '//' + l.host + base + '/?p=' +
+  encodeURIComponent(l.pathname.slice(base.length + 1) + l.search + l.hash));
+</script>
+</head>
+<body>Redirecting to Prakasha…</body>
+</html>

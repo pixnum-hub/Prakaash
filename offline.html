@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#C9A84C">
+<title>Prakasha — Offline</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0A0612;
+    color: #EDE0C4;
+    font-family: Georgia, 'Times New Roman', serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    text-align: center;
+    padding: 36px 24px;
+  }
+  .star {
+    font-size: 4rem;
+    color: #C9A84C;
+    margin-bottom: 22px;
+    animation: pulse 2.5s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: .35; transform: scale(1);   }
+    50%       { opacity: 1;   transform: scale(1.1); }
+  }
+  h1 { font-size: 1.6rem; color: #C9A84C; letter-spacing: .05em; margin-bottom: 10px; }
+  .divider {
+    width: 90px; height: 1px;
+    background: linear-gradient(90deg, transparent, #C9A84C, transparent);
+    margin: 0 auto 22px;
+  }
+  p { color: #7A7268; font-size: .92rem; line-height: 1.75; max-width: 290px; margin: 0 auto 22px; }
+  ol {
+    text-align: left;
+    max-width: 265px;
+    margin: 0 auto 30px;
+    color: #A8956A;
+    font-size: .9rem;
+    line-height: 2.3;
+    padding-left: 22px;
+  }
+  ol li::marker { color: #C9A84C; }
+  button {
+    background: #C9A84C;
+    color: #0A0612;
+    border: none;
+    border-radius: 40px;
+    padding: 14px 36px;
+    font-size: .95rem;
+    font-weight: 700;
+    letter-spacing: .05em;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  button:hover { background: #F0D080; }
+</style>
+</head>
+<body>
+  <div class="star">✦</div>
+  <h1>Prakasha — Offline</h1>
+  <div class="divider"></div>
+  <p>This device hasn't cached the app yet.</p>
+  <ol>
+    <li>Connect to the internet</li>
+    <li>Open Prakasha in your browser</li>
+    <li>Let it fully load &amp; browse a few tabs</li>
+    <li>Works completely offline from then on ✦</li>
+  </ol>
+  <button onclick="location.reload()">Try Again</button>
+</body>
+</html>

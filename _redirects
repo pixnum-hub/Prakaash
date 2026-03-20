@@ -1,0 +1,9 @@
+# Netlify — Prakasha PWA v7
+# Explicit files served directly; wildcard → index.html (200 = no redirect)
+/service-worker.js      /service-worker.js      200
+/manifest.json          /manifest.json          200
+/offline.html           /offline.html           200
+/404.html               /404.html               200
+/keygen.html            /keygen.html            200
+/icons/*                /icons/:splat           200
+/*                      /index.html             200
