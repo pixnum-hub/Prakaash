@@ -2669,72 +2669,103 @@ footer {
 </footer>
 
 <script>
-(function(){
-  'use strict';
-  if('serviceWorker' in navigator){
-    window.addEventListener('load',()=>{
-      navigator.serviceWorker.register('./service-worker.js?v=7',{scope:'./'})
-        .then(reg=>{
-          console.log('[PWA] SW registered:',reg.scope);
-          reg.addEventListener('updatefound',()=>{
-            const nw=reg.installing;
-            nw.addEventListener('statechange',()=>{
-              if(nw.state==='installed'&&navigator.serviceWorker.controller) showUpdateBanner();
-            });
+/* ── PWA: Service Worker + Install Prompt ─────────────────── */
+'use strict';
+
+// ── Install prompt (must be captured as early as possible) ───
+let _deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  _deferredPrompt = e;
+  const btn = document.getElementById('pwa-install-btn');
+  if (btn) btn.style.display = 'flex';
+  console.log('[PWA] Install prompt captured');
+});
+
+window.addEventListener('appinstalled', function() {
+  _deferredPrompt = null;
+  const btn = document.getElementById('pwa-install-btn');
+  if (btn) btn.style.display = 'none';
+  if (typeof showToast === 'function') showToast('✦ Prakasha installed!');
+  console.log('[PWA] App installed');
+});
+
+// ── Install trigger (called by button) ───────────────────────
+window.installPWA = async function() {
+  if (!_deferredPrompt) {
+    if (typeof showToast === 'function')
+      showToast('Use "Add to Home Screen" in browser menu');
+    return;
+  }
+  _deferredPrompt.prompt();
+  const { outcome } = await _deferredPrompt.userChoice;
+  console.log('[PWA] Install outcome:', outcome);
+  if (outcome === 'accepted' && typeof showToast === 'function')
+    showToast('✦ Installing Prakasha…');
+  _deferredPrompt = null;
+};
+
+// ── Service Worker registration ───────────────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('./service-worker.js', { scope: './' })
+      .then(function(reg) {
+        console.log('[PWA] SW registered, scope:', reg.scope);
+
+        // Listen for updates
+        reg.addEventListener('updatefound', function() {
+          var nw = reg.installing;
+          nw.addEventListener('statechange', function() {
+            if (nw.state === 'installed' && navigator.serviceWorker.controller) {
+              var b = document.getElementById('pwa-update-banner');
+              if (b) b.style.display = 'flex';
+            }
           });
-        }).catch(e=>console.warn('[PWA] SW failed:',e));
+        });
 
-      // Ask SW to cache the app (itself) for offline use
-      if(navigator.serviceWorker.controller){
-        navigator.serviceWorker.controller.postMessage('CACHE_APP');
-      }
-      navigator.serviceWorker.addEventListener('controllerchange',()=>{
-        navigator.serviceWorker.controller?.postMessage('CACHE_APP');
+        // Proactively cache the app after load
+        if (navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage('CACHE_APP');
+        }
+        reg.addEventListener('activate', function() {
+          if (navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage('CACHE_APP');
+          }
+        });
+      })
+      .catch(function(err) {
+        console.warn('[PWA] SW registration failed:', err);
       });
 
-      let refreshing=false;
-      navigator.serviceWorker.addEventListener('controllerchange',()=>{
-        if(!refreshing){refreshing=true;window.location.reload();}
-      });
+    // Reload when new SW takes over
+    var _refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', function() {
+      if (!_refreshing) { _refreshing = true; window.location.reload(); }
     });
-  }
-  function showUpdateBanner(){
-    const b=document.getElementById('pwa-update-banner');
-    if(b) b.style.display='flex';
-  }
-  window.applyPWAUpdate=function(){
-    if(navigator.serviceWorker.controller)
-      navigator.serviceWorker.controller.postMessage('SKIP_WAITING');
-    const b=document.getElementById('pwa-update-banner');
-    if(b) b.style.display='none';
-  };
-  let deferredPrompt=null;
-  window.addEventListener('beforeinstallprompt',(e)=>{
-    e.preventDefault(); deferredPrompt=e;
-    const btn=document.getElementById('pwa-install-btn');
-    if(btn) btn.style.display='flex';
   });
-  window.addEventListener('appinstalled',()=>{
-    deferredPrompt=null;
-    const btn=document.getElementById('pwa-install-btn');
-    if(btn) btn.style.display='none';
-    if(typeof showToast==='function') showToast('✦ Prakasha installed!');
-  });
-  window.installPWA=async function(){
-    if(!deferredPrompt){
-      if(typeof showToast==='function') showToast('Use "Add to Home Screen" in your browser menu');
-      return;
-    }
-    deferredPrompt.prompt();
-    const{outcome}=await deferredPrompt.userChoice;
-    if(outcome==='accepted'&&typeof showToast==='function') showToast('✦ Installing Prakasha…');
-    deferredPrompt=null;
-  };
-  window.addEventListener('online',()=>{ if(typeof showToast==='function') showToast('✦ Back online'); });
-  window.addEventListener('offline',()=>{ if(typeof showToast==='function') showToast('⚠ Offline — saved data still works'); });
-  const isStandalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
-  if(isStandalone) document.documentElement.classList.add('pwa-standalone');
-})();
+}
+
+// ── Update banner handler ─────────────────────────────────────
+window.applyPWAUpdate = function() {
+  if (navigator.serviceWorker.controller)
+    navigator.serviceWorker.controller.postMessage('SKIP_WAITING');
+  var b = document.getElementById('pwa-update-banner');
+  if (b) b.style.display = 'none';
+};
+
+// ── Standalone class + online/offline toasts ─────────────────
+if (window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true) {
+  document.documentElement.classList.add('pwa-standalone');
+}
+
+window.addEventListener('online',  function() {
+  if (typeof showToast === 'function') showToast('✦ Back online');
+});
+window.addEventListener('offline', function() {
+  if (typeof showToast === 'function') showToast('⚠ Offline — saved data still works');
+});
 </script>
 
 <div id="pwa-update-banner" style="display:none;position:fixed;bottom:72px;left:50%;transform:translateX(-50%);z-index:9999;background:#1E1835;border:1px solid rgba(201,168,76,.5);border-radius:14px;padding:12px 18px;align-items:center;gap:14px;box-shadow:0 4px 24px rgba(0,0,0,.7);max-width:360px;width:90%">

@@ -8,8 +8,7 @@
   "display": "standalone",
   "display_override": [
     "standalone",
-    "minimal-ui",
-    "browser"
+    "minimal-ui"
   ],
   "orientation": "portrait-primary",
   "background_color": "#0A0612",
