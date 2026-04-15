@@ -1,19 +1,24 @@
-# Apache / cPanel — Prakasha PWA v7
+# Apache / cPanel — Prakasha PWA (paid + free versions)
 Options -MultiViews
 RewriteEngine On
 
-# Service worker: no-cache so updates are immediate
-<Files "service-worker.js">
+# Service workers: always fresh, correct scope header
+<FilesMatch "^service-worker.*\.js$">
   Header set Cache-Control "no-cache, no-store, must-revalidate"
   Header set Service-Worker-Allowed "/"
-</Files>
+</FilesMatch>
 
-# Manifest + index: always fresh
-<FilesMatch "^(manifest\.json|index\.html)$">
+# Manifests: always fresh
+<FilesMatch "^manifest.*\.json$">
   Header set Cache-Control "public, max-age=0, must-revalidate"
 </FilesMatch>
 
-# Keygen: no-cache (admin tool — never serve stale)
+# App HTML: always fresh
+<FilesMatch "^index.*\.html$">
+  Header set Cache-Control "public, max-age=0, must-revalidate"
+</FilesMatch>
+
+# Keygen: no-cache, noindex
 <Files "keygen.html">
   Header set Cache-Control "no-cache, no-store, must-revalidate"
   Header set X-Robots-Tag "noindex, nofollow"

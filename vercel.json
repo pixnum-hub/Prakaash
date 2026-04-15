@@ -1,13 +1,13 @@
 {
   "rewrites": [
     {
-      "source": "/((?!service-worker\\.js|manifest\\.json|offline\\.html|404\\.html|keygen\\.html|icons/.*).*)",
+      "source": "/((?!service-worker\\.js|service-worker-free\\.js|manifest\\.json|manifest-free\\.json|offline\\.html|404\\.html|keygen\\.html|index-free\\.html|icons/.*).*)",
       "destination": "/index.html"
     }
   ],
   "headers": [
     {
-      "source": "/service-worker.js",
+      "source": "/(service-worker|service-worker-free)\\.js",
       "headers": [
         {
           "key": "Cache-Control",
@@ -20,7 +20,7 @@
       ]
     },
     {
-      "source": "/manifest.json",
+      "source": "/(manifest|manifest-free)\\.json",
       "headers": [
         {
           "key": "Cache-Control",
@@ -29,7 +29,7 @@
       ]
     },
     {
-      "source": "/index.html",
+      "source": "/(index|index-free)\\.html",
       "headers": [
         {
           "key": "Cache-Control",

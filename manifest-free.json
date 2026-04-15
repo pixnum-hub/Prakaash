@@ -1,8 +1,8 @@
 {
   "name": "Prakasha — Vedic Astrology",
   "short_name": "Prakasha",
-  "description": "Complete Vedic Jyotish — 33 tabs: birth charts, VSOP87, all dasha systems, nakshatra encyclopedia, sahams, upagrahas, fixed stars, gochara, compatibility, full PDF & text reports. ₹999/month. By Manik Roy.",
-  "id": "prakasha-vedic-astrology",
+  "description": "Free complete Vedic Jyotish — 33 tabs: birth charts, VSOP87, all dasha systems, nakshatra encyclopedia, sahams, upagrahas, fixed stars, gochara, compatibility, full PDF & text reports. By Manik Roy.",
+  "id": "prakasha-free",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

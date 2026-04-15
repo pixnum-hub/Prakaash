@@ -1,29 +1,28 @@
 // ═══════════════════════════════════════════════════════════════════
-//  PRAKASHA (PAID) — SERVICE WORKER  v8
-//  © Manik Roy  ·  Vedic Astrology
+//  PRAKASHA (FREE) — SERVICE WORKER  free-v2
+//  © Manik Roy  ·  Vedic Astrology — Free Version
 //
 //  Strategies:
-//    index.html (~665 KB full app) → cache-first + background revalidate
-//    other HTML pages              → network-first  (6 s timeout)
-//    Google Fonts CSS              → stale-while-revalidate
-//    font files (.woff2)           → cache-first  (immutable)
-//    CDN scripts                   → stale-while-revalidate
-//    icons / manifest              → cache-first  (lazy)
-//    keygen.html                   → NEVER cached  (admin only)
-//    everything else same-origin   → network-with-cache-fallback
+//    index-free.html (~644 KB) → cache-first + background revalidate
+//    other HTML pages           → network-first  (6 s timeout)
+//    Google Fonts CSS           → stale-while-revalidate
+//    font files (.woff2)        → cache-first  (immutable)
+//    CDN scripts                → stale-while-revalidate
+//    icons / manifest           → cache-first  (lazy)
+//    everything else same-origin → network-with-cache-fallback
 // ═══════════════════════════════════════════════════════════════════
 
-const SW_VERSION    = 'v8';
-const CACHE_VERSION = 'prakasha-paid-' + SW_VERSION;
-const STATIC_CACHE  = 'prakasha-paid-static-' + SW_VERSION;
-const DYNAMIC_CACHE = 'prakasha-paid-dynamic-' + SW_VERSION;
+const SW_VERSION    = 'free-v2';
+const CACHE_VERSION = 'prakasha-' + SW_VERSION;
+const STATIC_CACHE  = 'prakasha-free-static-' + SW_VERSION;
+const DYNAMIC_CACHE = 'prakasha-free-dynamic-' + SW_VERSION;
 const FONT_CACHE    = 'prakasha-fonts-v2';
 const ALL_CACHES    = [STATIC_CACHE, DYNAMIC_CACHE, FONT_CACHE];
 
-// Small shell files only — index.html (~665 KB) cached lazily on first visit
+// Small shell files only — index-free.html cached lazily on first visit
 const PRECACHE = [
   './',
-  './manifest.json',
+  './manifest-free.json',
   './offline.html',
   './icons/icon-192x192.png',
   './icons/icon-96x96.png',
@@ -44,12 +43,12 @@ self.addEventListener('install', (e) => {
         Promise.allSettled(
           PRECACHE.map(url =>
             cache.add(new Request(url, { cache: 'reload' }))
-              .catch(err => console.warn('[SW-paid] Pre-cache miss:', url, err.message))
+              .catch(err => console.warn('[SW-free] Pre-cache miss:', url, err.message))
           )
         )
       )
       .then(() => {
-        console.log('[SW-paid] Prakasha', SW_VERSION, 'installed');
+        console.log('[SW-free] Prakasha', SW_VERSION, 'installed');
         return self.skipWaiting();
       })
   );
@@ -62,10 +61,10 @@ self.addEventListener('activate', (e) => {
       .then(keys => Promise.all(
         keys
           .filter(k => !ALL_CACHES.includes(k))
-          .map(k => { console.log('[SW-paid] Pruning:', k); return caches.delete(k); })
+          .map(k => { console.log('[SW-free] Pruning:', k); return caches.delete(k); })
       ))
       .then(() => {
-        console.log('[SW-paid] Prakasha', SW_VERSION, 'active');
+        console.log('[SW-free] Prakasha', SW_VERSION, 'active');
         return self.clients.claim();
       })
   );
@@ -79,14 +78,12 @@ self.addEventListener('fetch', (e) => {
   if (req.method !== 'GET')             return;
   if (!url.protocol.startsWith('http')) return;
 
-  // Admin tool — never cache, always fetch fresh
-  if (url.pathname.endsWith('keygen.html')) return;
-
-  // 1. Root / index.html → cache-first + background revalidate (large app file)
+  // 1. Root / index.html / index-free.html → cache-first + background revalidate
   if (url.origin === self.location.origin &&
       (url.pathname === '/' ||
        url.pathname.endsWith('/') ||
-       url.pathname.endsWith('index.html'))) {
+       url.pathname.endsWith('index.html') ||
+       url.pathname.endsWith('index-free.html'))) {
     e.respondWith(cacheFirstBackground(req, STATIC_CACHE));
     return;
   }
@@ -109,7 +106,7 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
-  // 5. CDN scripts (jsPDF, html2canvas) → stale-while-revalidate
+  // 5. CDN scripts → stale-while-revalidate
   if (url.origin === 'https://cdnjs.cloudflare.com') {
     e.respondWith(staleWhileRevalidate(req, DYNAMIC_CACHE));
     return;
@@ -119,7 +116,8 @@ self.addEventListener('fetch', (e) => {
   if (url.origin === self.location.origin &&
       (/\/icons\//.test(url.pathname) ||
        /\.(png|jpg|jpeg|svg|ico|webp)$/.test(url.pathname) ||
-       url.pathname.endsWith('manifest.json'))) {
+       url.pathname.endsWith('manifest-free.json') ||
+       url.pathname.endsWith('offline.html'))) {
     e.respondWith(cacheFirst(req, STATIC_CACHE));
     return;
   }
@@ -134,7 +132,6 @@ self.addEventListener('fetch', (e) => {
 //  STRATEGIES
 // ════════════════════════════════════════════════════════════════════
 
-// Serve from cache instantly; refresh in background for next visit
 async function cacheFirstBackground(req, cacheName) {
   const cached = await caches.match(req);
   fetch(req).then(async res => {
@@ -148,7 +145,6 @@ async function cacheFirstBackground(req, cacheName) {
   } catch { return offlinePage(); }
 }
 
-// Try network first; fall back to cache on timeout or failure
 async function networkFirst(req, cacheName, timeoutMs) {
   const ctrl  = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), timeoutMs);
@@ -161,12 +157,11 @@ async function networkFirst(req, cacheName, timeoutMs) {
     clearTimeout(timer);
     return (await caches.match(req)) ||
            (await caches.match('./')) ||
-           (await caches.match('./index.html')) ||
+           (await caches.match('./index-free.html')) ||
            offlinePage();
   }
 }
 
-// Cache first; populate cache on miss
 async function cacheFirst(req, cacheName) {
   const cached = await caches.match(req);
   if (cached) return cached;
@@ -177,7 +172,6 @@ async function cacheFirst(req, cacheName) {
   } catch { return new Response('', { status: 503 }); }
 }
 
-// Return cached immediately; update cache in background
 async function staleWhileRevalidate(req, cacheName) {
   const cached = await caches.match(req);
   const fresh  = fetch(req).then(async res => {
@@ -187,7 +181,6 @@ async function staleWhileRevalidate(req, cacheName) {
   return cached ?? fresh;
 }
 
-// Try network; fall back to cache
 async function networkWithFallback(req, cacheName) {
   try {
     const res = await fetch(req);
@@ -251,7 +244,7 @@ self.addEventListener('message', (e) => {
   const type = e.data.type ?? e.data;
   switch (type) {
     case 'SKIP_WAITING':
-      console.log('[SW-paid] Applying update…');
+      console.log('[SW-free] Applying update…');
       self.skipWaiting();
       break;
     case 'GET_VERSION':
@@ -264,7 +257,7 @@ self.addEventListener('message', (e) => {
       break;
     case 'CACHE_APP':
       caches.open(STATIC_CACHE)
-        .then(cache => cache.add('./index.html').catch(() => {}));
+        .then(cache => cache.add('./index-free.html').catch(() => {}));
       break;
   }
 });
